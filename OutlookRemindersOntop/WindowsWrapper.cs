@@ -6,30 +6,19 @@ using System.Timers;
 using System.Collections;
 using System.Text;
 using System.Collections.Generic;
-
+using System.Collections;
+using System.Collections.Concurrent;
 
 namespace OutlookRemindersOntop
 {
 
     public class WindowsWrapper
     {
-        internal static event EventHandler WindowActivatedChanged;
-        internal static Timer TimerWatcher = new Timer();
-        internal static WindowInfo WindowActive = new WindowInfo();
-        internal static void DoStartWatcher()
-        {
-            TimerWatcher.Interval = 500;
-            TimerWatcher.Elapsed += TimerWatcher_Tick;
-            TimerWatcher.Start();
-        }
-
-        /// <summary>Returns a dictionary that contains the handle and title of all the open windows.</summary>
-        /// <returns>A dictionary that contains the handle and title of all the open windows.</returns>
-        public static IDictionary<IntPtr, WindowInfo> GetOpenedWindows()
+        private ConcurrentDictionary<IntPtr, WindowInfo> windows = new ConcurrentDictionary<IntPtr, WindowInfo>();
+        public WindowsWrapper()
         {
             IntPtr shellWindow = GetShellWindow();
-            Console.WriteLine($"shellwindow {shellWindow}");
-            Dictionary<IntPtr, WindowInfo> windows = new Dictionary<IntPtr, WindowInfo>();
+            Console.WriteLine($"getting all Windows {shellWindow}");
 
             EnumWindows(new EnumWindowsProc(delegate (IntPtr hWnd, int lParam)
             {
@@ -37,36 +26,22 @@ namespace OutlookRemindersOntop
                 if (!IsWindowVisible(hWnd)) return true;
                 int length = GetWindowTextLength(hWnd);
                 if (length == 0) return true;
-                var info = new WindowInfo();
-                info.Handle = hWnd;
-                info.File = new FileInfo(GetProcessPath(hWnd));
+                var info = new WindowInfo(hWnd);
                 //info.Title = builder.ToString();
                 windows[hWnd] = info;
+                //Logger.Debug(info.ToString());
                 return true;
             }), 0);
+        }
+
+        /// <summary>Returns a dictionary that contains the handle and title of all the open windows.</summary>
+        /// <returns>A dictionary that contains the handle and title of all the open windows.</returns>
+        public IDictionary<IntPtr, WindowInfo> GetOpenedWindows()
+        {
             return windows;
         }
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
-
-        public static string GetProcessPath(IntPtr hwnd)
-        {
-            uint pid = 0;
-            GetWindowThreadProcessId(hwnd, out pid);
-            if (hwnd != IntPtr.Zero)
-            {
-                if (pid != 0)
-                {
-                    var process = Process.GetProcessById((int)pid);
-                    if (process != null)
-                    {
-                        return process.MainModule.FileName.ToString();
-                    }
-                }
-            }
-            return "";
-        }
-
         [DllImport("USER32.DLL")]
         private static extern bool EnumWindows(EnumWindowsProc enumFunc, int lParam);
 
@@ -85,9 +60,6 @@ namespace OutlookRemindersOntop
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-        //WARN: Only for "Any CPU":
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int GetWindowThreadProcessId(IntPtr handle, out uint processId);
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern int GetWindowLong(IntPtr hWnd, int nIndex);
@@ -107,25 +79,6 @@ namespace OutlookRemindersOntop
             return (exStyle & WS_EX_TOPMOST) == WS_EX_TOPMOST;
         }
 
-        static void TimerWatcher_Tick(object sender, EventArgs e)
-        {
-            var windowActive = new WindowInfo();
-            windowActive.Handle = GetForegroundWindow();
-            string path = GetProcessPath(windowActive.Handle);
-            if (string.IsNullOrEmpty(path)) return;
-            windowActive.File = new FileInfo(path);
-            int length = GetWindowTextLength(windowActive.Handle);
-            if (length == 0) return;
-
-            if (windowActive.ToString() != WindowActive.ToString())
-            {
-                //fire:
-                WindowActive = windowActive;
-                if (WindowActivatedChanged != null) WindowActivatedChanged(sender, e);
-                Console.WriteLine("Window: " + WindowActive.ToString());
-            }
-        }
-
 
         static void showallProcessTitles()
         {
@@ -140,57 +93,59 @@ namespace OutlookRemindersOntop
                 }
             }
         }
-        static IEnumerable<IntPtr> getWindowPtrForTitle(string processFilter, string titleFilter, Action<string, string> showNotification)
+        IEnumerable<WindowInfo> getWindowPtrForTitle(string processFilter, string titleFilter)
         {
-            Process[] processlist = Process.GetProcesses();
-            foreach (Process process in processlist)
+            foreach (var curr in this.GetOpenedWindows())
             {
-
-                if (!String.IsNullOrEmpty(process.MainWindowTitle))
+                var currTitle = curr.Value.Title;
+                if (!String.IsNullOrEmpty(currTitle))
                 {
-                    var handle = process.MainWindowHandle;
-                    if (process.ProcessName.Contains(processFilter, StringComparison.CurrentCultureIgnoreCase))
+                    var currProcName = curr.Value.FileName;
+                    var handle = curr.Key;
+                    if (currTitle.Contains(titleFilter, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        if (process.MainWindowTitle.Contains(titleFilter, StringComparison.CurrentCultureIgnoreCase))
+                        if (string.IsNullOrEmpty(currProcName) || currProcName.Contains(processFilter, StringComparison.CurrentCultureIgnoreCase))
                         {
-                            Logger.Debug($"Matched Process: {process.ProcessName} Handle {handle} Window title:{ process.MainWindowTitle}");
-                            showNotification(process.ProcessName, process.MainWindowTitle);
+                            Logger.Debug($"Matched title: {currTitle}\t Handle: {handle} Window process:{currProcName}");
 
-                            yield return handle;
+                            yield return curr.Value;
                         }
                         else
                         {
-                            Logger.Debug($"Matched process Window process:{ process.ProcessName} titleunmatched {process.MainWindowTitle}");
+                            Logger.Debug($"process title matched {currTitle} \t unmatched process:{ currProcName} ");
                         }
                     }
 
                 }
             }
         }
-
-
-        public static void changeWindowOnTopSetting(string proc, string windowTitle, Action<string, string> showNotification, bool setOnTop = true)
+        public void changeWindowOnTopSetting(string proc, string windowTitle, Action<WindowInfo> showNotification, bool setOnTop = true)
         {
-            foreach (var winptr in getWindowPtrForTitle(proc, windowTitle, showNotification))
+
+            foreach (var winptr in getWindowPtrForTitle(proc, windowTitle))
             {
-                changeWindowOnTopSetting(winptr);
+                changeWindowOnTopSetting(winptr, showNotification);
             }
 
         }
-        static void changeWindowOnTopSetting(IntPtr windowHandle, bool setOnTop = true)
+
+        static void changeWindowOnTopSetting(WindowInfo window, Action<WindowInfo> showNotification, bool setOnTop = true)
         {
-            if (windowHandle == IntPtr.Zero)
+            if (window.Handle == IntPtr.Zero)
             {
                 Trace.WriteLine($"Window handle is zero");
                 return;
             }
+            //if (IsWindowTopMost(window.Handle))
+                //return;
+            showNotification(window);
             const int HWND_TOPMOST = -1;
             const int HWND_NOTOPMOST = -2;
             const int SWP_NOMOVE = 0x0002;
             const int SWP_NOSIZE = 0x0001;
             var windowSetting = setOnTop ? HWND_TOPMOST : HWND_NOTOPMOST;
             SetWindowPos(
-                windowHandle,
+                window.Handle,
                 windowSetting, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
         }

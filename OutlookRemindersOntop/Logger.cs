@@ -18,7 +18,7 @@ namespace OutlookRemindersOntop
 
         public static void Debug(string logline)
         {
-            System.Diagnostics.Debug.WriteLine(logline);
+            //System.Diagnostics.Debug.WriteLine(logline);
             Info(logline);
         }
 

@@ -32,8 +32,9 @@ namespace OutlookRemindersOntop
             try
             {
                 this.timer.Stop();
-
-                WindowsWrapper.changeWindowOnTopSetting("outlook","Reminders", this.showNotification);
+                WindowsWrapper windows = new WindowsWrapper();
+                windows.changeWindowOnTopSetting("outlook","Reminder", this.showNotification);
+                
 
             }
             finally
@@ -42,8 +43,9 @@ namespace OutlookRemindersOntop
             }
 
         }
-        void showNotification(string process, string title)
+        void showNotification(WindowInfo win)
         {
+            string process = win.FileName; string title = win.Title;
             if (this.WindowFoundHandler != null)
                 WindowFoundHandler(this,new WindowFoundEventArgs()
                     {
