@@ -1,6 +1,6 @@
 ﻿namespace OutlookRemindersOntop
 {
-    partial class Form1
+    partial class OutlookRemindersOnTop
     {
         /// <summary>
         /// Required designer variable.
@@ -37,13 +37,13 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // Form1
+            // OutlookRemindersOnTop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(575, 418);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "OutlookRemindersOnTop";
+            this.Text = "OutlookRemindersOnTop";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 

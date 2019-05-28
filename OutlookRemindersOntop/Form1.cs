@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace OutlookRemindersOntop
 {
-    public partial class Form1 : Form
+    public partial class OutlookRemindersOnTop : Form
     {
-        public Form1()
+        public OutlookRemindersOnTop()
         {
             InitializeComponent();
         }
@@ -21,6 +21,9 @@ namespace OutlookRemindersOntop
         private void Form1_Load(object sender, EventArgs e)
         {
             var windowWatcher = new WindowWatcher();
+            notifyIcon1.Visible = true;
+            notifyIcon1.Icon = SystemIcons.Application;
+
             windowWatcher.WindowFoundHandler += WindowWatcher_WindowFoundHandler;
         }
         private void WindowWatcher_WindowFoundHandler(object sender, WindowFoundEventArgs e)
