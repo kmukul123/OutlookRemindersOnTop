@@ -6,8 +6,8 @@ using System.Timers;
 using System.Collections;
 using System.Text;
 using System.Collections.Generic;
-using System.Collections;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace OutlookRemindersOntop
 {
@@ -69,7 +69,7 @@ namespace OutlookRemindersOntop
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetWindowPos( 
+        private static extern bool SetWindowPos(
            IntPtr hWnd, int hWndInsertAfter, int x, int y, int cx, int cy, int uFlags);
 
 
@@ -93,15 +93,20 @@ namespace OutlookRemindersOntop
                 }
             }
         }
+        string nameToIgnore = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+        const string titleToIgnore = "BringOutlookRemindersOnTop";
         IEnumerable<WindowInfo> getWindowPtrForTitle(string processFilter, string titleFilter)
         {
+            
             foreach (var curr in this.GetOpenedWindows())
             {
                 var currTitle = curr.Value.Title;
                 if (!String.IsNullOrEmpty(currTitle))
                 {
-                    var currProcName = curr.Value.FileName;
+                    var currProcName = curr.Value.ProcessName;
                     var handle = curr.Key;
+                    if (currTitle == titleToIgnore && currProcName == nameToIgnore)
+                        continue;
                     if (currTitle.Contains(titleFilter, StringComparison.CurrentCultureIgnoreCase))
                     {
                         if (string.IsNullOrEmpty(currProcName) || currProcName.Contains(processFilter, StringComparison.CurrentCultureIgnoreCase))
@@ -129,16 +134,16 @@ namespace OutlookRemindersOntop
 
         }
 
-        static void changeWindowOnTopSetting(WindowInfo window, Action<WindowInfo> showNotification, bool setOnTop = true)
+        void changeWindowOnTopSetting(WindowInfo window, Action<WindowInfo> showNotification, bool setOnTop = true)
         {
             if (window.Handle == IntPtr.Zero)
             {
                 Trace.WriteLine($"Window handle is zero");
                 return;
             }
-            //if (IsWindowTopMost(window.Handle))
-                //return;
             showNotification(window);
+            ShowWindow(window.Handle);
+            return;
             const int HWND_TOPMOST = -1;
             const int HWND_NOTOPMOST = -2;
             const int SWP_NOMOVE = 0x0002;
@@ -149,5 +154,16 @@ namespace OutlookRemindersOntop
                 windowSetting, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
         }
+
+        [DllImport("user32.dll")]
+        private static extern int ShowWindow(IntPtr hWnd, uint Msg);
+
+        private void ShowWindow(IntPtr handle)
+        {
+            const uint SW_RESTORE = 0x09;
+            ShowWindow(handle, SW_RESTORE);
+        }
+
+
     }
 }

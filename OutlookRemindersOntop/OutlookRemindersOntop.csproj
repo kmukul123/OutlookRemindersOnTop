@@ -7,7 +7,7 @@
     <ProjectGuid>{7237954A-041F-498F-A113-849364F57463}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>OutlookRemindersOntop</RootNamespace>
-    <AssemblyName>OutlookRemindersOntop</AssemblyName>
+    <AssemblyName>RemindersOntop</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
