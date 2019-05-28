@@ -157,11 +157,18 @@ namespace OutlookRemindersOntop
 
         [DllImport("user32.dll")]
         private static extern int ShowWindow(IntPtr hWnd, uint Msg);
+        [DllImport("User32.dll")]
+        public static extern bool SetForegroundWindow(int hWnd);
+        [System.Runtime.InteropServices.DllImport("User32.dll")]
+        private static extern bool IsIconic(IntPtr handle);
 
         private void ShowWindow(IntPtr handle)
         {
             const uint SW_RESTORE = 0x09;
-            ShowWindow(handle, SW_RESTORE);
+            if (IsIconic(handle))
+                ShowWindow(handle, SW_RESTORE);
+            SetForegroundWindow(handle.ToInt32());
+            
         }
 
 

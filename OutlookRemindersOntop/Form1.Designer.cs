@@ -32,6 +32,9 @@
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.scanAllWindows = new System.Windows.Forms.Button();
+            this.donateButton = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,12 +60,39 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(67, 17);
             this.toolStripStatusLabel1.Text = "Monitoring";
+            this.toolStripStatusLabel1.Click += new System.EventHandler(this.ToolStripStatusLabel1_Click);
+            // 
+            // scanAllWindows
+            // 
+            this.scanAllWindows.Location = new System.Drawing.Point(304, 42);
+            this.scanAllWindows.Name = "scanAllWindows";
+            this.scanAllWindows.Size = new System.Drawing.Size(120, 22);
+            this.scanAllWindows.TabIndex = 1;
+            this.scanAllWindows.Text = "ScanAllWindows";
+            this.scanAllWindows.UseVisualStyleBackColor = true;
+            this.scanAllWindows.Click += new System.EventHandler(this.ScanAllWindows_Click);
+            // 
+            // donateButton
+            // 
+            this.donateButton.Location = new System.Drawing.Point(304, 90);
+            this.donateButton.Name = "donateButton";
+            this.donateButton.Size = new System.Drawing.Size(120, 25);
+            this.donateButton.TabIndex = 2;
+            this.donateButton.Text = "Donate";
+            this.donateButton.UseVisualStyleBackColor = true;
+            this.donateButton.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.ToolTipTitle = "Support us!";
             // 
             // OutlookRemindersOnTop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(494, 357);
+            this.Controls.Add(this.donateButton);
+            this.Controls.Add(this.scanAllWindows);
             this.Controls.Add(this.statusStrip1);
             this.Name = "OutlookRemindersOnTop";
             this.Text = "BringOutlookRemindersOnTop";
@@ -80,6 +110,9 @@
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Button scanAllWindows;
+        private System.Windows.Forms.Button donateButton;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
