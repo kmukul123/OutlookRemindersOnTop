@@ -42,6 +42,10 @@ namespace OutlookRemindersOntop
                 windows.changeWindowOnTopSetting("notepad", "test123456", this.showNotification);
 
             }
+            catch (Exception ex)
+            {
+                Logger.Error($"{ex}");
+            }
             finally
             {
                 this.timer.Start();

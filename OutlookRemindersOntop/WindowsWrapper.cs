@@ -94,7 +94,6 @@ namespace OutlookRemindersOntop
             }
         }
         string nameToIgnore = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-        const string titleToIgnore = "BringOutlookRemindersOnTop";
         IEnumerable<WindowInfo> getWindowPtrForTitle(string processFilter, string titleFilter)
         {
             
@@ -105,7 +104,7 @@ namespace OutlookRemindersOntop
                 {
                     var currProcName = curr.Value.ProcessName;
                     var handle = curr.Key;
-                    if (currTitle == titleToIgnore && currProcName == nameToIgnore)
+                    if (currProcName == nameToIgnore)
                         continue;
                     if (currTitle.Contains(titleFilter, StringComparison.CurrentCultureIgnoreCase))
                     {

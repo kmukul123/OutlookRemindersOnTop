@@ -17,26 +17,25 @@ namespace OutlookRemindersOntop
         {
             InitializeComponent();
         }
+        private delegate void SafeCallDelegate(string text);
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            toolStripStatusLabel1.Spring = true;
+            statusStrip1.LayoutStyle = ToolStripLayoutStyle.Flow;
+
+            Logger.notifyError = this.NotifyMessage;
             windowWatcher = new WindowWatcher();
             notifyIcon1.Icon = SystemIcons.Application;
 
             windowWatcher.WindowFoundHandler += WindowWatcher_WindowFoundHandler;
             toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are donated to charity");
+            NotifyMessage("Started Monitoring");
         }
         private void WindowWatcher_WindowFoundHandler(object sender, WindowFoundEventArgs e)
         {
-            var last = notifyIcon1.Visible;
-            notifyIcon1.Visible = true;
-            notifyIcon1.BalloonTipText = $"Bringing {e.window.WndProcess}'s window with title {e.window.Title} on top isVisible {e.window.IsVisible} ";
-            notifyIcon1.ShowBalloonTip(500);
-            notifyIcon1.Visible = last;
-            this.toolStripStatusLabel1.Text = $"Bringing { e.window.WndProcess}'s window with title {e.window.Title} on top {DateTime.Now.ToShortTimeString()}";
-            statusStrip1.Update();
-            statusStrip1.Refresh();
+            this.NotifyMessage($"Bringing { e.window.WndProcess}'s window with title {e.window.Title} on top isVisible {e.window.IsVisible} ");
         }
 
         private void OutlookRemindersOnTop_Resize(object sender, EventArgs e)
@@ -99,6 +98,26 @@ namespace OutlookRemindersOntop
                 "&bn=" + "PP%2dDonationsBF";
 
             System.Diagnostics.Process.Start(url);
+        }
+        public void NotifyMessage(string message)
+        {
+            if (this.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(NotifyMessage);
+                Invoke(d, new object[] { message });
+            }
+            else
+            {
+                var lastvisible = notifyIcon1.Visible;
+                notifyIcon1.Visible = true;
+                notifyIcon1.BalloonTipText = message;
+                notifyIcon1.ShowBalloonTip(500);
+                notifyIcon1.Visible = lastvisible;
+                this.toolStripStatusLabel1.Text = message;
+                statusStrip1.Update();
+                statusStrip1.Refresh();
+            }
+            
         }
     }
 }

@@ -10,6 +10,7 @@ namespace OutlookRemindersOntop
 {
     static class Logger
     {
+        public static Action<string> notifyError;
         public static void Info(string logline)
         {
             Trace.TraceInformation(logline);
@@ -25,9 +26,9 @@ namespace OutlookRemindersOntop
         public static void Error(string logline)
         {
             Trace.TraceError(logline);
-#if DEBUG
-            MessageBox.Show($"Error {logline}");
-#endif
+            if (notifyError!=null)
+                notifyError($"Error {logline}");
+
             Console.WriteLine(logline);
         }
     }
