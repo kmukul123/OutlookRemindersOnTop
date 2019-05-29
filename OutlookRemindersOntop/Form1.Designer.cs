@@ -35,6 +35,7 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.checkBoxstartup = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,11 +86,23 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
+            // checkBoxstartup
+            // 
+            this.checkBoxstartup.AutoSize = true;
+            this.checkBoxstartup.Location = new System.Drawing.Point(23, 293);
+            this.checkBoxstartup.Name = "checkBoxstartup";
+            this.checkBoxstartup.Size = new System.Drawing.Size(96, 17);
+            this.checkBoxstartup.TabIndex = 4;
+            this.checkBoxstartup.Text = "Run on startup";
+            this.checkBoxstartup.UseVisualStyleBackColor = true;
+            this.checkBoxstartup.CheckedChanged += new System.EventHandler(this.CheckBoxstartup_CheckedChanged);
+            // 
             // OutlookRemindersOnTop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(494, 357);
+            this.Controls.Add(this.checkBoxstartup);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.donateButton);
             this.Controls.Add(this.scanAllWindows);
@@ -112,6 +125,7 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.CheckBox checkBoxstartup;
     }
 }
 

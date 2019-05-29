@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -32,6 +33,7 @@ namespace OutlookRemindersOntop
             windowWatcher.WindowFoundHandler += WindowWatcher_WindowFoundHandler;
             toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are also donated to charity\nThanks");
             NotifyMessage("Started Monitoring");
+            checkBoxstartup.Checked = this.IsStartupSet();
         }
         private void WindowWatcher_WindowFoundHandler(object sender, WindowFoundEventArgs e)
         {
@@ -87,7 +89,7 @@ namespace OutlookRemindersOntop
         {
             string url = "";
 
-            string business = "mukulk@outlook.com";  
+            string business = "mukulk@outlook.com";
             string description = "Donation-OutlookReminders";            // '%20' represents a space. remember HTML!
             string country = "US";                  // AU, US, etc.
             string currency = "USD";                 // AUD, USD, etc.
@@ -120,7 +122,32 @@ namespace OutlookRemindersOntop
                 statusStrip1.Update();
                 statusStrip1.Refresh();
             }
-            
+
         }
+
+        private void CheckBoxstartup_CheckedChanged(object sender, EventArgs e)
+        {
+            const string ApplicationName = "OutlookRemindersOnTop";
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey
+            ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (checkBoxstartup.Checked)
+                rk.SetValue(ApplicationName, Application.ExecutablePath.ToString());
+            else
+                rk.DeleteValue(ApplicationName, false);
+        }
+        private bool IsStartupSet()
+        {
+            const string ApplicationName = "OutlookRemindersOnTop";
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey
+            ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            Object o = rk.GetValue(ApplicationName);
+            if (o != null)
+                return true;
+            else
+                return false;
+        }
+
     }
 }
