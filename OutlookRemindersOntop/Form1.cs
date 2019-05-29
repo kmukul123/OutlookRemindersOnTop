@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,16 @@ namespace OutlookRemindersOntop
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            if (DateTime.Now > new DateTime(2019, 10, 1))
+            {
+                var url = "https://1drv.ms/f/s!AmaHAXM9ZhPhaYN972FkhyTLHO8";
+                Process.Start(url);
+                MessageBox.Show($@"Please Get new version from
+{url}
+The site should open in your browser", "Expired:");
+                Environment.Exit(1);
+                return;
+            }
             toolStripStatusLabel1.Spring = true;
             statusStrip1.LayoutStyle = ToolStripLayoutStyle.Flow;
 
