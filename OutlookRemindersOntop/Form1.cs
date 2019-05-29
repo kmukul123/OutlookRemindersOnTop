@@ -30,12 +30,15 @@ namespace OutlookRemindersOntop
             notifyIcon1.Icon = SystemIcons.Application;
 
             windowWatcher.WindowFoundHandler += WindowWatcher_WindowFoundHandler;
-            toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are donated to charity");
+            toolTip1.SetToolTip(donateButton, "please support us and donate for a coffee\nPart of your donations are also donated to charity\nThanks");
             NotifyMessage("Started Monitoring");
         }
         private void WindowWatcher_WindowFoundHandler(object sender, WindowFoundEventArgs e)
         {
-            this.NotifyMessage($"Bringing { e.window.WndProcess}'s window with title {e.window.Title} on top isVisible {e.window.IsVisible} ");
+            if (e.window.IsVisible)
+                this.NotifyMessage($"Bringing { e.window.WndProcess}'s window with title {e.window.Title} on top {DateTime.Now.ToShortTimeString()}");
+            else
+                this.NotifyMessage($"NotVisible { e.window.WndProcess}'s window with title {e.window.Title}");
         }
 
         private void OutlookRemindersOnTop_Resize(object sender, EventArgs e)
