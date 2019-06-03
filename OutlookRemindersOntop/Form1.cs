@@ -128,10 +128,10 @@ The site should open in your browser", "Expired:");
                 notifyIcon1.Visible = true;
                 notifyIcon1.BalloonTipText = message;
                 notifyIcon1.ShowBalloonTip(500);
-                notifyIcon1.Visible = lastvisible;
                 this.toolStripStatusLabel1.Text = message;
                 statusStrip1.Update();
                 statusStrip1.Refresh();
+                notifyIcon1.Visible = lastvisible;
             }
 
         }

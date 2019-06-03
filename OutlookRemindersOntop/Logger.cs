@@ -34,7 +34,7 @@ namespace OutlookRemindersOntop
         public static void Alert(string logline)
         {
             Trace.TraceInformation(logline);
-            notifyError?.Invoke($"Alert {logline}");
+            notifyError?.Invoke($"Alert {logline} {DateTime.Now.ToShortTimeString()}");
 
             Console.WriteLine(logline);
         }
