@@ -125,6 +125,12 @@ namespace OutlookRemindersOntop
         }
         public void changeWindowOnTopSetting(string proc, string windowTitle, Action<WindowInfo> showNotification, bool setOnTop = true)
         {
+            var foreGroundWindow = GetForegroundWindow();
+            if (foreGroundWindow == IntPtr.Zero)
+            {
+                Logger.Alert("Can't find the foreground window");
+                return;
+            }
 
             foreach (var winptr in getWindowPtrForTitle(proc, windowTitle))
             {
@@ -133,6 +139,7 @@ namespace OutlookRemindersOntop
 
         }
 
+        
         void changeWindowOnTopSetting(WindowInfo window, Action<WindowInfo> showNotification, bool setOnTop = true)
         {
             if (window.Handle == IntPtr.Zero)

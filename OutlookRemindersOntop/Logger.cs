@@ -26,8 +26,15 @@ namespace OutlookRemindersOntop
         public static void Error(string logline)
         {
             Trace.TraceError(logline);
-            if (notifyError!=null)
-                notifyError($"Error {logline}");
+            notifyError?.Invoke($"Error {logline}");
+
+            Console.WriteLine(logline);
+        }
+
+        public static void Alert(string logline)
+        {
+            Trace.TraceInformation(logline);
+            notifyError?.Invoke($"Alert {logline}");
 
             Console.WriteLine(logline);
         }
