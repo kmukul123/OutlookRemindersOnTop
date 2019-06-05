@@ -8,6 +8,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Threading;
 
 namespace OutlookRemindersOntop
 {
@@ -60,6 +61,8 @@ namespace OutlookRemindersOntop
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetTopWindow(IntPtr hWnd);
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern int GetWindowLong(IntPtr hWnd, int nIndex);
@@ -96,7 +99,7 @@ namespace OutlookRemindersOntop
         string nameToIgnore = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
         IEnumerable<WindowInfo> getWindowPtrForTitle(string processFilter, string titleFilter)
         {
-            
+
             foreach (var curr in this.GetOpenedWindows())
             {
                 var currTitle = curr.Value.Title;
@@ -123,15 +126,28 @@ namespace OutlookRemindersOntop
                 }
             }
         }
-        public void changeWindowOnTopSetting(string proc, string windowTitle, Action<WindowInfo> showNotification, bool setOnTop = true)
+        public void getForegroundWindow()
         {
             var foreGroundWindow = GetForegroundWindow();
+
             if (foreGroundWindow == IntPtr.Zero)
             {
-                Logger.Alert("Can't find the foreground window");
-                return;
+                Thread.Sleep(100);
+                //var topWindow = GetTopWindow(IntPtr.Zero);
+                var topWindow = WindowsWrapper.GetForegroundWindow();
+                var win = new WindowInfo(topWindow);
+
+                Logger.Alert($"Can't find the foreground window retry {win.ProcessName}-{win.Title}");
             }
 
+        }
+
+        public void changeWindowOnTopSetting(string proc, string windowTitle, Action<WindowInfo> showNotification, bool setOnTop = true)
+        {
+
+#if DEBUG
+            this.getForegroundWindow();
+#endif
             foreach (var winptr in getWindowPtrForTitle(proc, windowTitle))
             {
                 changeWindowOnTopSetting(winptr, showNotification);
@@ -139,7 +155,7 @@ namespace OutlookRemindersOntop
 
         }
 
-        
+
         void changeWindowOnTopSetting(WindowInfo window, Action<WindowInfo> showNotification, bool setOnTop = true)
         {
             if (window.Handle == IntPtr.Zero)
@@ -147,7 +163,10 @@ namespace OutlookRemindersOntop
                 Trace.WriteLine($"Window handle is zero");
                 return;
             }
-            showNotification(window);
+
+            window.WasVisibleOnScreen = window.IsVisibleOnScreen;
+            if (!window.WasVisibleOnScreen)
+                showNotification(window);
             ShowWindow(window.Handle);
             return;
             const int HWND_TOPMOST = -1;
@@ -174,7 +193,7 @@ namespace OutlookRemindersOntop
             if (IsIconic(handle))
                 ShowWindow(handle, SW_RESTORE);
             SetForegroundWindow(handle.ToInt32());
-            
+
         }
 
 

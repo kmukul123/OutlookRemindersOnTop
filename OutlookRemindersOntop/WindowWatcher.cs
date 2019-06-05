@@ -39,7 +39,7 @@ namespace OutlookRemindersOntop
                 this.timer.Stop();
                 WindowsWrapper windows = new WindowsWrapper();
                 windows.changeWindowOnTopSetting("outlook", "Reminder", this.showNotification);
-                //windows.changeWindowOnTopSetting("notepad", "test123456", this.showNotification);
+                windows.changeWindowOnTopSetting("notepad", "test1234567.txt", this.showNotification);
 
             }
             catch (Exception ex)

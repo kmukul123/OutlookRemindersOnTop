@@ -14,6 +14,7 @@ namespace OutlookRemindersOntop
         public WindowInfo(IntPtr Handle)
         {
             this.Handle = Handle;
+            //this.WasVisibleOnScreen = this.IsVisibleOnScreen;
         }
         private CachedPropertiesClass cache = new CachedPropertiesClass();
         public IntPtr Handle = IntPtr.Zero;
@@ -36,13 +37,12 @@ namespace OutlookRemindersOntop
                 }
             }
         }
-        public bool IsVisible
+        public bool IsVisibleOnScreen
         {
             get
             {
-                if (this.Handle!=IntPtr.Zero)
-                    return IsWindowVisible(this.Handle);
-                return false;
+                var visible = new VisibilityTester().IsVisibleOnScreen(this.Handle);
+                return visible;
             }
         }
 
@@ -100,6 +100,9 @@ namespace OutlookRemindersOntop
             }
 
         }
+
+        public bool WasVisibleOnScreen { get; internal set; }
+
         [DllImport("USER32.DLL")]
         private static extern int GetWindowTextLength(IntPtr hWnd);
         [DllImport("USER32.DLL")]

@@ -15,6 +15,7 @@ namespace OutlookRemindersOntop
     public partial class OutlookRemindersOnTop : Form
     {
         WindowWatcher windowWatcher;
+        Random random = new Random();
         public OutlookRemindersOnTop()
         {
             InitializeComponent();
@@ -48,10 +49,14 @@ The site should open in your browser", "Expired:");
         }
         private void WindowWatcher_WindowFoundHandler(object sender, WindowFoundEventArgs e)
         {
-            if (e.window.IsVisible)
-                this.NotifyMessage($"Bringing { e.window.WndProcess}'s window with title {e.window.Title} on top {DateTime.Now.ToShortTimeString()}");
-            else
-                this.NotifyMessage($"NotVisible { e.window.WndProcess}'s window with title {e.window.Title}");
+            if (!e.window.WasVisibleOnScreen)
+                this.NotifyMessage($"Brought { e.window.WndProcess}'s window with title {e.window.Title} on top {DateTime.Now.ToShortTimeString()}");
+            //else
+            //    this.NotifyMessage($"Still NotVisible { e.window.WndProcess}'s window with title {e.window.Title}");
+
+            if (random.Next(1000) < 5)
+                this.NotifyMessage($"Hope you like this program,\n we would appreciate your feedback and any donation");
+
         }
 
         private void OutlookRemindersOnTop_Resize(object sender, EventArgs e)
