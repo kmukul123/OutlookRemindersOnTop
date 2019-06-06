@@ -20,7 +20,7 @@ namespace OutlookRemindersOntop
         {
             this.timer = new Timer();
 #if DEBUG
-            timer.Interval = TimeSpan.FromSeconds(5).TotalMilliseconds;
+            timer.Interval = TimeSpan.FromMinutes(2).TotalMilliseconds;
 #else
             timer.Interval = TimeSpan.FromMinutes(5).TotalMilliseconds;
 #endif

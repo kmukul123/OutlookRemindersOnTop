@@ -167,6 +167,10 @@ namespace OutlookRemindersOntop
             window.WasVisibleOnScreen = window.IsVisibleOnScreen;
             if (!window.WasVisibleOnScreen)
                 showNotification(window);
+#if DEBUG
+            else
+                Logger.Alert("Window was already visible");
+#endif
             ShowWindow(window.Handle);
             return;
             const int HWND_TOPMOST = -1;
